@@ -30,7 +30,7 @@ class Hotel extends CI_Controller
 		$amounts = [];
 		for ($i=0; $i<7; $i++) 
 		{ 
-			$d = date('Y-m-d',strtotime("-$i day"));
+			$d = date('Y-m-d',strtotime("-$i month"));
 			$dates[] = $d;
 
 			$sql = "SELECT 
@@ -72,7 +72,7 @@ class Hotel extends CI_Controller
 
 
 
-// टेबल Edit करण्यासाठी
+// table Edit karnyasathi
 public function edit_table($id)
 {
     $this->navbar();
@@ -85,7 +85,7 @@ public function edit_table($id)
     $this->footer();
 }
 
-// टेबल Update करण्यासाठी
+// table Update karnyasathi
 public function update_table()
 {
     $id = $_POST['hotel_table_id'];
@@ -96,7 +96,7 @@ public function update_table()
     redirect(base_url('hotel/manage_table'));
 }
 
-// टेबल Delete करण्यासाठी
+// table Delete karnyasathi
 public function delete_table($id)
 {
     $this->My_model->delete("hotel_table", ['hotel_table_id' => $id]);
@@ -141,7 +141,7 @@ public function edit_category($id)
     $cond = ['category_id' => $id];
     $data['edit_data'] = $this->My_model->select_where("category", $cond)[0];
 
-    // सर्व categories फॉर्मखाली दाखवण्यासाठी
+    // sarv categories form khali dakhvnyasathi
     $data['cats'] = $this->My_model->get_cats();
 
     $this->load->view("hotel/manage_category", $data);
@@ -223,12 +223,12 @@ public function update_product()
 {
     $id = $_POST['product_id'];
 
-    // जर नवीन image अपलोड केली असेल तर
+    // jar new image upload keli asel tar
     if (!empty($_FILES['product_image']['name'])) {
         $_POST['product_image'] = $image_name = time().$_FILES['product_image']['name'];
         move_uploaded_file($_FILES['product_image']['tmp_name'], "uploads/$image_name");
     } else {
-        unset($_POST['product_image']); // जुनी image ठेवायची असल्यास
+        unset($_POST['product_image']); // old image thevaychi asel tar
     }
 
     $this->My_model->update("products", $_POST, ['product_id' => $id]);

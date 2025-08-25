@@ -67,12 +67,27 @@ body {
 }
 
 .chart-container {
-  max-width: 900px;
+  width: 800px;
+  height: 500px;
   margin: auto;
   background: linear-gradient(to right, #eef2f3, #dfe9f3);
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  .chart-container {
+    width: 90%;       
+    height: auto;       
+    padding: 15px;      
+  }
+
+  canvas#myChart {
+    width: 100% !important;  
+    height: auto !important; 
+  }
 }
 </style>
 
@@ -136,32 +151,43 @@ body {
 
 
 
-<!-- Chart Section -->
-  <h2 class="text-center mb-4">Sales History</h2>
-<div class="chart-container mb-5">
 
-  <!-- Chart Type Switch -->
-  <div class="text-end mb-2">
-    <label for="chartType">Chart Type: </label>
-    <select id="chartType" class="form-select d-inline-block w-auto">
-      <option value="bar" selected>Bar</option>
-      <option value="line">Line</option>
-      <option value="pie">Pie</option>
-      <option value="doughnut">Doughnut</option>
-      <option value="radar">Radar</option>
-      <option value="polarArea">Polar Area</option>
-    </select>
+
+<!-- Chart Section -->
+<h2 class="text-center mb-4">Sales History</h2>
+<div class="chart-container mb-5 card shadow-sm p-3">
+
+  <!-- Chart Type Switch + Download Button -->
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <label for="chartType" class="me-2 fw-bold">Chart Type:</label>
+      <select id="chartType" class="form-select d-inline-block w-auto">
+        <option value="bar" selected>Bar</option>
+        <option value="line">Line</option>
+        <option value="pie">Pie</option>
+        <option value="doughnut">Doughnut</option>
+        <option value="radar">Radar</option>
+        <option value="polarArea">Polar Area</option>
+      </select>
+    </div>
+
+    <button id="downloadChart" class="btn btn-sm btn-dark">
+      <i class="fa fa-download me-1"></i> Download
+    </button>
   </div>
 
-  <canvas id="myChart" style="width:100%; height:500px;"></canvas>
+  <!-- Chart Canvas -->
+  <div class="position-relative" style="height:60vh; width:100%">
+    <canvas id="myChart"></canvas>
+  </div>
 </div>
 
-<!-- Chart.js CDN -->
+<!-- Chart.js v2.5.0 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
 <script>
-  var xValues = [<?= implode(",", $x_axis); ?>];
-  var yValues = [<?= implode(",", $y_axis); ?>];
+  var xValues = <?= json_encode($x_axis); ?>;
+  var yValues = <?= json_encode($y_axis); ?>;
   var chart;
 
   function createChart(type = 'bar') {
@@ -171,43 +197,38 @@ body {
 
     // Gradient for bar/line
     var gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, " rgb(110, 26, 121)"); // Purple
-    gradient.addColorStop(1, "rgb(197, 2, 93)"); // Pink
+    gradient.addColorStop(0, "rgb(110, 26, 121)");
+    gradient.addColorStop(1, "rgb(197, 2, 93)");
 
-    // Set up dataset
     var dataset = {
       label: "₹ Sales",
       data: yValues,
-      backgroundColor: type === 'bar' || type === 'line' ? (type === 'bar' ? gradient : "transparent") : [
-        "#a18cd1", "#fbc2eb", "#ff9a9e", "#fad0c4", "#fcb69f", "#ff758c", "#8ec5fc"
-      ],
+      backgroundColor: type === 'bar' || type === 'line'
+        ? (type === 'bar' ? gradient : "transparent")
+        : ["#a18cd1","#fbc2eb","#ff9a9e","#fad0c4","#fcb69f","#ff758c","#8ec5fc"],
       borderColor: "#a18cd1",
       borderWidth: 2,
       fill: type === 'bar',
       pointBackgroundColor: "#a18cd1"
     };
 
-    // Create chart
     chart = new Chart(ctx, {
       type: type,
-      data: {
-        labels: xValues,
-        datasets: [dataset]
-      },
+      data: { labels: xValues, datasets: [dataset] },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        legend: { display: type === 'pie' || type === 'doughnut' || type === 'polarArea' || type === 'radar' },
+        legend: { 
+          display: (type === 'pie' || type === 'doughnut' || type === 'polarArea' || type === 'radar')
+        },
         title: {
           display: true,
-          text: "Last 7 Day Sale History ₹ <?= number_format(array_sum($y_axis)) ?>",
+          text: "Last 30 Day Sale History ₹ <?= number_format(array_sum($y_axis)) ?>",
           fontSize: 18
         },
         scales: (type === 'bar' || type === 'line') ? {
           yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
+            ticks: { beginAtZero: true }
           }]
         } : {}
       }
@@ -217,9 +238,16 @@ body {
   // Initial chart
   createChart('bar');
 
-  // Change chart on dropdown selection
+  // Dropdown event
   document.getElementById("chartType").addEventListener("change", function () {
     createChart(this.value);
   });
-</script>
 
+  // Download Button
+  document.getElementById("downloadChart").addEventListener("click", function () {
+    var link = document.createElement('a');
+    link.href = chart.toBase64Image();
+    link.download = 'sales_history_chart.png';
+    link.click();
+  });
+</script>

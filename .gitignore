@@ -1,32 +1,35 @@
+# OS / editors
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/
 
+# Composer / vendors
+vendor/
+composer.lock
+
+# Env & secrets
+.env
+.env.*
+*.key
+
+# CodeIgniter 3
 application/cache/*
 !application/cache/index.html
-
 application/logs/*
 !application/logs/index.html
+application/config/database.php
 
-!application/*/.htaccess
+# CodeIgniter 4 (adjust if using CI4)
+writable/
+public/uploads/
 
-composer.lock
-tests/mocks/database/ci_test.sqlite
+# Common uploads (adjust per project)
+uploads/
+public/uploads/
 
-user_guide_src/build/*
-user_guide_src/cilexer/build/*
-user_guide_src/cilexer/dist/*
-user_guide_src/cilexer/pycilexer.egg-info/*
-/vendor/
+# Node (if any)
+node_modules/
 
-# IDE Files
-#-------------------------
-/nbproject/
-.idea/*
-
-## Sublime Text cache files
-*.tmlanguage.cache
-*.tmPreferences.cache
-*.stTheme.cache
-*.sublime-workspace
-*.sublime-project
-/tests/tests/
-/tests/results/
+# Misc
+*.log

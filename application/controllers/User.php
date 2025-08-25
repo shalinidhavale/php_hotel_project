@@ -8,7 +8,7 @@ class User extends CI_Controller
 	{
 		$_SESSION['table_id'] = $_GET['table_no'];
 
-       // टेस्टसाठी manually hotel_id सेट करत आहोत
+       // testsathi manually hotel_id set karat aahe
         $_SESSION['hotel_id'] = 1;
 
         $data['cats'] = $this->My_model->get_cats();
